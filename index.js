@@ -4,6 +4,7 @@
 // @description  Борьба с ботами вконтакте.
 // @version      0.0.1
 // @include      https://*vk.com/*
+// @require      https://cdn.jsdelivr.net/npm/idb-keyval@5/dist/iife/index-min.js
 // @grant        unsafeWindow
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setClipboard
@@ -11,7 +12,10 @@
 // @run-at       document-start
 // ==/UserScript==
 
-const VK_BOT_LIST_URL = 'http://api.gosvon.net/marking2'
+const VK_BOT_LIST_URL = 'http://api.gosvon.net/marking3/'
+const CONFIG_URL = 'http://api.gosvon.net/marking3/main'
+const IDB_KEY = 'botHighlighterSavedBases'
+// TODO remove
 const MAP_COLOR_BY_CODE = {
   '1': 'rgba(255,50,50,0.4)',
   '8': 'rgba(255,50,50,0.3)',
@@ -19,11 +23,15 @@ const MAP_COLOR_BY_CODE = {
   '13': 'rgba(255,50,50,0.3)',
 }
 
+const http = GM_xmlhttpRequest || (GM && GM.xmlHttpRequest)
 unsafeWindow.copyCheckLayout = copyCheckLayout
-const botList = botListFactory()
+
+const config = configFactory()
+const botLists = botListsFactory()
 
 async function start() {
-  await botList.fetch()
+  await config.fetch()
+  await botLists.fillLists()
 
   const finder = elementsFinderFactory()
 
@@ -49,7 +57,7 @@ function onReplyFound(replyEl) {
   }
 
   const userID = authorEl.getAttribute('data-from-id')
-  const bot = botList.findBot(userID)
+  const bot = botLists.findBot(userID)
 
   const replyContentEl = replyEl.querySelector('.reply_content')
   const replyAuthorEl = replyEl.querySelector('.reply_author')
@@ -95,7 +103,7 @@ function onPostFound(postEl) {
     return
   }
 
-  const bot = botList.findBot(userID)
+  const bot = botLists.findBot(userID)
 
   if (!bot) {
     return
@@ -124,7 +132,7 @@ function onPostFound(postEl) {
 
 function onFanFound(fanEl) {
   const userID = fanEl.getAttribute('data-id')
-  const bot = botList.findBot(userID)
+  const bot = botLists.findBot(userID)
 
   if (!bot) {
     return
@@ -152,7 +160,7 @@ function onFanFound(fanEl) {
 
 function onLikeFound(likeEl) {
   const userID = likeEl.getAttribute('href').substr(1)
-  const bot = botList.findBot(userID)
+  const bot = botLists.findBot(userID)
 
   if (!bot) {
     return
@@ -174,7 +182,7 @@ function onProfileFound() {
   }
 
   const userID = abuseActionEl.getAttribute('onclick').match(/\d+/)[0]
-  const bot = botList.findBot(userID)
+  const bot = botLists.findBot(userID)
 
   if (!bot) {
     return
@@ -205,7 +213,7 @@ function onFoundMobilePost(mobilePostEl) {
   }
 
   const userID = wiHeadLink.className.substr(4);
-  const bot = botList.findBot(userID)
+  const bot = botLists.findBot(userID)
 
   if (!bot) {
     return
@@ -240,7 +248,7 @@ function onFoundMobileProfile(ownerPanelEl) {
 
   const userID = reportEl.getAttribute('href').match(/owner_id=(\d+)/)[1]
 
-  const bot = botList.findBot(userID)
+  const bot = botLists.findBot(userID)
 
   if (!bot) {
     return
@@ -266,7 +274,7 @@ function onFoundMobileProfile(ownerPanelEl) {
 function onFoundMobileReply(replyEl) {
   const userID = replyEl.querySelector('.ReplyItem__action').getAttribute('onclick').match(/(\d+)\)/)[1]
 
-  const bot = botList.findBot(userID)
+  const bot = botLists.findBot(userID)
 
   if (!bot) {
     return
@@ -295,7 +303,7 @@ function onFoundMobileReply(replyEl) {
 function onFoundMobileFan(fanEl) {
   const userID = fanEl.className.match(/_u(\d+)/)[1]
 
-  const bot = botList.findBot(userID)
+  const bot = botLists.findBot(userID)
 
   if (!bot) {
     return
@@ -321,37 +329,40 @@ function createLayoutFromString(string) {
   return div.children[0]
 }
 
-function botListFactory() {
-  let botsArray = []
+function botListsFactory() {
+  let botLists = null
 
   function processStringBotList(stringList) {
     return stringList
       .split('\n')
       .map(row => {
-        const [ id, nickname, code ] = row.split('|')
+        const [ id, nickname, mark ] = row.split('|')
 
         return {
           id: Number(id),
           nickname: nickname === '-' ? null : nickname,
-          code
+          mark
         }
       })
   }
 
-  function fetch() {
-    const http = GM_xmlhttpRequest || (GM && GM.xmlHttpRequest)
-
+  function fetch(type) {
     if (!http) {
       return Promise.reject("Unable to get supported cross-origin XMLHttpRequest function.")
     }
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       http({
         method: "GET",
-        url: VK_BOT_LIST_URL,
+        url: VK_BOT_LIST_URL + type,
         onload(response) {
-          botsArray = processStringBotList(response.responseText)
-          resolve()
+          if (response.status !== 200) {
+            reject()
+            return;
+          }
+
+          const botList = processStringBotList(response.responseText)
+          resolve(botList)
         }
       })
     })
@@ -361,20 +372,149 @@ function botListFactory() {
     const matchId = String(idOrNickname).match(/^(id)?(\d{6,})$/)
     const id = matchId && Number(matchId[2])
 
+    // TODO искать только по включенным в настройках
+    const fullList = Object.values(botLists).flat()
+
     if (!id) {
-      return botsArray.find(bot => {
+      return fullList.find(bot => {
         return bot.nickname === idOrNickname
       })
     }
 
-    return botsArray.find(bot => {
+    return fullList.find(bot => {
       return bot.id === id
     })
   }
 
+  async function fillLists() {
+    const savedBotLists = await idbKeyval.get(IDB_KEY) || {}
+    const configData = config.getConfig();
+
+    const newBotLists = {}
+    const requests = []
+    for (const type in configData.typesInfo) {
+      const savedBotListItem = savedBotLists[type] || []
+
+      if (savedBotListItem.length === configData.typesInfo[type].count) {
+        newBotLists[type] = savedBotListItem
+        continue;
+      }
+
+      // TODO запрашивать только те типы, которые включены в настройках
+      requests.push(
+        fetch(type)
+          .then((fetchedBotList) => {
+            newBotLists[type] = fetchedBotList
+          })
+          .catch(() => {
+            newBotLists[type] = savedBotListItem
+          })
+      )
+    }
+
+    await Promise.all(requests)
+
+    await idbKeyval.set(IDB_KEY, newBotLists)
+    botLists = newBotLists
+  }
+
+  return {
+    fillLists,
+    findBot
+  }
+}
+
+function configFactory() {
+  let config = {
+    typesInfo: {},
+    marksInfo: {},
+  }
+
+  function processStringConfig(stringConfig) {
+    return stringConfig
+      .split('\n\n')
+      .reduce((acc, stringBlock) => {
+        const matchResult = stringBlock.match(/^\[(.+?)\]\n(.+)/s)
+        const blockTitle = matchResult?.[1]
+        const blockBody = matchResult?.[2]
+
+        if (blockTitle === 'types') {
+          const rows = blockBody.split('\n')
+          return {
+            ...acc,
+            typesInfo: rows.reduce((rowsAcc, row) => {
+              const [type, label, count] = row.split('|')
+
+              // TODO УДАЛИТЬ временное решение пока приходят "..."
+              if (isNaN(type)) {
+                return rowsAcc
+              }
+
+              return {
+                ...rowsAcc,
+                [type]: {
+                  label,
+                  count: Number(count)
+                }
+              }
+            }, {})
+          }
+        }
+
+        if (blockTitle === 'mark') {
+          const rows = blockBody.split('\n')
+          return {
+            ...acc,
+            marksInfo: rows.reduce((rowsAcc, row) => {
+              const [mark, label, color] = row.split('|')
+
+              // TODO УДАЛИТЬ временное решение пока приходят "..."
+              if (mark === '...') {
+                return rowsAcc
+              }
+
+              return {
+                ...rowsAcc,
+                [mark]: {
+                  label,
+                  color
+                }
+              }
+            }, {})
+          }
+        }
+
+        return acc
+      }, {
+        typesInfo: {},
+        marksInfo: {},
+      })
+  }
+
+  function fetch() {
+    if (!http) {
+      return Promise.reject("Unable to get supported cross-origin XMLHttpRequest function.")
+    }
+
+    return new Promise((resolve) => {
+      http({
+        method: "GET",
+        url: CONFIG_URL,
+        async onload(response) {
+          config = processStringConfig(response.responseText)
+          resolve()
+        }
+      })
+    })
+  }
+
+  function getConfig() {
+    return config
+  }
+
   return {
     fetch,
-    findBot
+    getConfig
   }
 }
 
