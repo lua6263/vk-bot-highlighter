@@ -4,11 +4,13 @@
 // @description  Борьба с ботами вконтакте.
 // @version      0.0.1
 // @include      https://*vk.com/*
-// @require      https://cdn.jsdelivr.net/npm/idb-keyval@5/dist/iife/index-min.js
+// @connect      api.gosvon.net
 // @grant        unsafeWindow
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setClipboard
 // @grant        GM.xmlHttpRequest
+// @grant        GM_setValue
+// @grant        GM_getValue
 // @run-at       document-start
 // ==/UserScript==
 
@@ -383,18 +385,16 @@ function botListsFactory() {
 
   async function fillLists() {
     const configData = config.getConfig();
-    const localBotListVersion = 0
-    console.log(localBotListVersion, configData.botListVersion);
+    const localBotListVersion = GM_getValue('botHighlighterBotListVersion') || 0
 
     if (configData.botListVersion === localBotListVersion) {
-      botList = await idbKeyval.get('botHighlighterSavedBotList') || []
-      console.log(botList);
+      botList = JSON.parse(GM_getValue('botHighlighterSavedBotList') || '[]')
       return
     }
 
     const newBotLists = await fetchBotList()
-    await idbKeyval.set('botHighlighterSavedBotList', newBotLists)
-    await idbKeyval.set('botHighlighterBotListVersion', configData.botListVersion)
+    GM_setValue('botHighlighterSavedBotList', JSON.stringify(newBotLists))
+    GM_setValue('botHighlighterBotListVersion', configData.botListVersion)
     botList = newBotLists
   }
 
