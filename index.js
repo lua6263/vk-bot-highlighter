@@ -12,9 +12,8 @@
 // @run-at       document-start
 // ==/UserScript==
 
-const VK_BOT_LIST_URL = 'http://api.gosvon.net/marking3/'
-const CONFIG_URL = 'http://api.gosvon.net/marking3/main'
-const IDB_KEY = 'botHighlighterSavedBases'
+const VK_BOT_LIST_URL = 'http://api.gosvon.net/marking3/list'
+const CONFIG_URL = 'http://api.gosvon.net/marking3/main2'
 // TODO remove
 const MAP_COLOR_BY_CODE = {
   '1': 'rgba(255,50,50,0.4)',
@@ -27,11 +26,11 @@ const http = GM_xmlhttpRequest || (GM && GM.xmlHttpRequest)
 unsafeWindow.copyCheckLayout = copyCheckLayout
 
 const config = configFactory()
-const botLists = botListsFactory()
+const botList = botListsFactory()
 
 async function start() {
-  await config.fetch()
-  await botLists.fillLists()
+  await config.fetchConfig()
+  await botList.fillLists()
 
   const finder = elementsFinderFactory()
 
@@ -57,7 +56,7 @@ function onReplyFound(replyEl) {
   }
 
   const userID = authorEl.getAttribute('data-from-id')
-  const bot = botLists.findBot(userID)
+  const bot = botList.findBot(userID)
 
   const replyContentEl = replyEl.querySelector('.reply_content')
   const replyAuthorEl = replyEl.querySelector('.reply_author')
@@ -78,8 +77,8 @@ function onReplyFound(replyEl) {
     return
   }
 
-  replyContentEl.style.background = MAP_COLOR_BY_CODE[bot.code]
-  replyContentEl.style.borderLeft = `3px solid ${MAP_COLOR_BY_CODE[bot.code]}`
+  replyContentEl.style.background = 'rgba(255,50,50,0.4)'
+  replyContentEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
   replyContentEl.style.paddingLeft = '3px'
 
   replyAuthorEl.append(
@@ -103,7 +102,7 @@ function onPostFound(postEl) {
     return
   }
 
-  const bot = botLists.findBot(userID)
+  const bot = botList.findBot(userID)
 
   if (!bot) {
     return
@@ -112,8 +111,8 @@ function onPostFound(postEl) {
   const postHeaderEl = postEl.querySelector('.post_header')
   const postAuthorEl = postEl.querySelector('.post_author')
 
-  postHeaderEl.style.background = MAP_COLOR_BY_CODE[bot.code]
-  postHeaderEl.style.borderLeft = `3px solid ${MAP_COLOR_BY_CODE[bot.code]}`
+  postHeaderEl.style.background = 'rgba(255,50,50,0.4)'
+  postHeaderEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
   postHeaderEl.style.paddingLeft = '3px'
 
   postAuthorEl.append(
@@ -132,14 +131,14 @@ function onPostFound(postEl) {
 
 function onFanFound(fanEl) {
   const userID = fanEl.getAttribute('data-id')
-  const bot = botLists.findBot(userID)
+  const bot = botList.findBot(userID)
 
   if (!bot) {
     return
   }
 
-  fanEl.style.background = MAP_COLOR_BY_CODE[bot.code]
-  fanEl.style.borderLeft = `3px solid ${MAP_COLOR_BY_CODE[bot.code]}`
+  fanEl.style.background = 'rgba(255,50,50,0.4)'
+  fanEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
   fanEl.style.paddingLeft = '3px'
 
   fanEl.append(
@@ -160,7 +159,7 @@ function onFanFound(fanEl) {
 
 function onLikeFound(likeEl) {
   const userID = likeEl.getAttribute('href').substr(1)
-  const bot = botLists.findBot(userID)
+  const bot = botList.findBot(userID)
 
   if (!bot) {
     return
@@ -182,14 +181,14 @@ function onProfileFound() {
   }
 
   const userID = abuseActionEl.getAttribute('onclick').match(/\d+/)[0]
-  const bot = botLists.findBot(userID)
+  const bot = botList.findBot(userID)
 
   if (!bot) {
     return
   }
 
   const pagePhotoEl = document.querySelector('.page_photo');
-  pagePhotoEl.style.background = MAP_COLOR_BY_CODE[bot.code]
+  pagePhotoEl.style.background = 'rgba(255,50,50,0.4)'
 
   const pageNameEl = document.querySelector('.page_name');
 
@@ -213,7 +212,7 @@ function onFoundMobilePost(mobilePostEl) {
   }
 
   const userID = wiHeadLink.className.substr(4);
-  const bot = botLists.findBot(userID)
+  const bot = botList.findBot(userID)
 
   if (!bot) {
     return
@@ -221,8 +220,8 @@ function onFoundMobilePost(mobilePostEl) {
 
   const postHeaderEl = mobilePostEl.querySelector('.wi_head');
 
-  postHeaderEl.style.background = MAP_COLOR_BY_CODE[bot.code]
-  postHeaderEl.style.borderLeft = `3px solid ${MAP_COLOR_BY_CODE[bot.code]}`
+  postHeaderEl.style.background = 'rgba(255,50,50,0.4)'
+  postHeaderEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
   postHeaderEl.style.paddingLeft = "3px"
 
   postHeaderEl.append(
@@ -248,7 +247,7 @@ function onFoundMobileProfile(ownerPanelEl) {
 
   const userID = reportEl.getAttribute('href').match(/owner_id=(\d+)/)[1]
 
-  const bot = botLists.findBot(userID)
+  const bot = botList.findBot(userID)
 
   if (!bot) {
     return
@@ -256,7 +255,7 @@ function onFoundMobileProfile(ownerPanelEl) {
 
   const ppContEl = ownerPanelEl.querySelector('.pp_cont')
 
-  ppContEl.style.background = MAP_COLOR_BY_CODE[bot.code]
+  ppContEl.style.background = 'rgba(255,50,50,0.4)'
   ppContEl.append(
     createLayoutFromString(`
       <i>
@@ -274,7 +273,7 @@ function onFoundMobileProfile(ownerPanelEl) {
 function onFoundMobileReply(replyEl) {
   const userID = replyEl.querySelector('.ReplyItem__action').getAttribute('onclick').match(/(\d+)\)/)[1]
 
-  const bot = botLists.findBot(userID)
+  const bot = botList.findBot(userID)
 
   if (!bot) {
     return
@@ -282,8 +281,8 @@ function onFoundMobileReply(replyEl) {
 
   const replyHeaderEl = replyEl.querySelector('.ReplyItem__header')
 
-  replyHeaderEl.style.background = MAP_COLOR_BY_CODE[bot.code]
-  replyHeaderEl.style.borderLeft = `3px solid ${MAP_COLOR_BY_CODE[bot.code]}`
+  replyHeaderEl.style.background = 'rgba(255,50,50,0.4)'
+  replyHeaderEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
   replyHeaderEl.style.paddingLeft = "3px"
 
   replyHeaderEl.append(
@@ -303,14 +302,14 @@ function onFoundMobileReply(replyEl) {
 function onFoundMobileFan(fanEl) {
   const userID = fanEl.className.match(/_u(\d+)/)[1]
 
-  const bot = botLists.findBot(userID)
+  const bot = botList.findBot(userID)
 
   if (!bot) {
     return
   }
 
-  fanEl.style.background = MAP_COLOR_BY_CODE[bot.code]
-  fanEl.style.borderLeft = `3px solid ${MAP_COLOR_BY_CODE[bot.code]}`
+  fanEl.style.background = 'rgba(255,50,50,0.4)'
+  fanEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
   fanEl.style.paddingLeft = "3px"
 }
 
@@ -330,23 +329,21 @@ function createLayoutFromString(string) {
 }
 
 function botListsFactory() {
-  let botLists = null
+  let botList = []
 
-  function processStringBotList(stringList) {
-    return stringList
-      .split('\n')
-      .map(row => {
-        const [ id, nickname, mark ] = row.split('|')
-
-        return {
-          id: Number(id),
-          nickname: nickname === '-' ? null : nickname,
-          mark
-        }
-      })
+  function processRawBotList(rawBotList) {
+    return rawBotList
+      .map(rawBotItem => ({
+        id: Number(rawBotItem.i),
+        nickname: rawBotItem.n,
+        marks: [
+          rawBotItem.t,
+          ...(rawBotItem.m ? [rawBotItem.m] : [])
+        ]
+      }))
   }
 
-  function fetch(type) {
+  function fetchBotList() {
     if (!http) {
       return Promise.reject("Unable to get supported cross-origin XMLHttpRequest function.")
     }
@@ -354,14 +351,14 @@ function botListsFactory() {
     return new Promise((resolve, reject) => {
       http({
         method: "GET",
-        url: VK_BOT_LIST_URL + type,
+        url: VK_BOT_LIST_URL,
         onload(response) {
           if (response.status !== 200) {
             reject()
             return;
           }
 
-          const botList = processStringBotList(response.responseText)
+          const botList = processRawBotList(JSON.parse(response.responseText))
           resolve(botList)
         }
       })
@@ -373,49 +370,32 @@ function botListsFactory() {
     const id = matchId && Number(matchId[2])
 
     // TODO искать только по включенным в настройках
-    const fullList = Object.values(botLists).flat()
-
     if (!id) {
-      return fullList.find(bot => {
+      return botList.find(bot => {
         return bot.nickname === idOrNickname
       })
     }
 
-    return fullList.find(bot => {
+    return botList.find(bot => {
       return bot.id === id
     })
   }
 
   async function fillLists() {
-    const savedBotLists = await idbKeyval.get(IDB_KEY) || {}
     const configData = config.getConfig();
+    const localBotListVersion = 0
+    console.log(localBotListVersion, configData.botListVersion);
 
-    const newBotLists = {}
-    const requests = []
-    for (const type in configData.typesInfo) {
-      const savedBotListItem = savedBotLists[type] || []
-
-      if (savedBotListItem.length === configData.typesInfo[type].count) {
-        newBotLists[type] = savedBotListItem
-        continue;
-      }
-
-      // TODO запрашивать только те типы, которые включены в настройках
-      requests.push(
-        fetch(type)
-          .then((fetchedBotList) => {
-            newBotLists[type] = fetchedBotList
-          })
-          .catch(() => {
-            newBotLists[type] = savedBotListItem
-          })
-      )
+    if (configData.botListVersion === localBotListVersion) {
+      botList = await idbKeyval.get('botHighlighterSavedBotList') || []
+      console.log(botList);
+      return
     }
 
-    await Promise.all(requests)
-
-    await idbKeyval.set(IDB_KEY, newBotLists)
-    botLists = newBotLists
+    const newBotLists = await fetchBotList()
+    await idbKeyval.set('botHighlighterSavedBotList', newBotLists)
+    await idbKeyval.set('botHighlighterBotListVersion', configData.botListVersion)
+    botList = newBotLists
   }
 
   return {
@@ -426,72 +406,35 @@ function botListsFactory() {
 
 function configFactory() {
   let config = {
-    typesInfo: {},
-    marksInfo: {},
+    botListVersion: null,
+    marks: {},
   }
 
-  function processStringConfig(stringConfig) {
-    return stringConfig
-      .split('\n\n')
-      .reduce((acc, stringBlock) => {
-        const matchResult = stringBlock.match(/^\[(.+?)\]\n(.+)/s)
-        const blockTitle = matchResult?.[1]
-        const blockBody = matchResult?.[2]
+  function processRawConfig(rawConfig) {
+    const marksFromTypes = rawConfig.types.map((rawTypeItem) => ({
+        id: rawTypeItem.id,
+        name: rawTypeItem.name,
+        color: rawTypeItem.color,
+        gradientDirection: null
+    }))
 
-        if (blockTitle === 'types') {
-          const rows = blockBody.split('\n')
-          return {
-            ...acc,
-            typesInfo: rows.reduce((rowsAcc, row) => {
-              const [type, label, count] = row.split('|')
+    const marksFromMark = rawConfig.mark.map((rawMarkItem) => ({
+        id: rawMarkItem.id,
+        name: rawMarkItem.name,
+        color: rawMarkItem.color,
+        gradientDirection: rawMarkItem.id.split('_')[0]
+    }))
 
-              // TODO УДАЛИТЬ временное решение пока приходят "..."
-              if (isNaN(type)) {
-                return rowsAcc
-              }
-
-              return {
-                ...rowsAcc,
-                [type]: {
-                  label,
-                  count: Number(count)
-                }
-              }
-            }, {})
-          }
-        }
-
-        if (blockTitle === 'mark') {
-          const rows = blockBody.split('\n')
-          return {
-            ...acc,
-            marksInfo: rows.reduce((rowsAcc, row) => {
-              const [mark, label, color] = row.split('|')
-
-              // TODO УДАЛИТЬ временное решение пока приходят "..."
-              if (mark === '...') {
-                return rowsAcc
-              }
-
-              return {
-                ...rowsAcc,
-                [mark]: {
-                  label,
-                  color
-                }
-              }
-            }, {})
-          }
-        }
-
-        return acc
-      }, {
-        typesInfo: {},
-        marksInfo: {},
-      })
+    return {
+      botListVersion: rawConfig.timestamp,
+      marks: [
+        ...marksFromTypes,
+        ...marksFromMark,
+      ]
+    }
   }
 
-  function fetch() {
+  function fetchConfig() {
     if (!http) {
       return Promise.reject("Unable to get supported cross-origin XMLHttpRequest function.")
     }
@@ -501,7 +444,7 @@ function configFactory() {
         method: "GET",
         url: CONFIG_URL,
         async onload(response) {
-          config = processStringConfig(response.responseText)
+          config = processRawConfig(JSON.parse(response.responseText))
           resolve()
         }
       })
@@ -513,7 +456,7 @@ function configFactory() {
   }
 
   return {
-    fetch,
+    fetchConfig,
     getConfig
   }
 }
