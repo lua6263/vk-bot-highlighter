@@ -16,16 +16,26 @@
 
 const VK_BOT_LIST_URL = 'http://api.gosvon.net/marking3/list'
 const CONFIG_URL = 'http://api.gosvon.net/marking3/main2'
-// TODO remove
-const MAP_COLOR_BY_CODE = {
-  '1': 'rgba(255,50,50,0.4)',
-  '8': 'rgba(255,50,50,0.3)',
-  '12': 'rgba(255,90,0,0.4)',
-  '13': 'rgba(255,50,50,0.3)',
-}
 
 const http = GM_xmlhttpRequest || (GM && GM.xmlHttpRequest)
 unsafeWindow.copyCheckLayout = copyCheckLayout
+
+const utils = {
+  allParents(element) {
+    const parents = [element]
+    while (parents[parents.length - 1].parentElement) {
+      parents.push(parents[parents.length - 1].parentElement)
+    }
+    return parents.slice(1)
+  },
+
+  createLayoutFromString(string) {
+    const div = document.createElement('div')
+    div.innerHTML = string
+
+    return div.children[0]
+  }
+}
 
 const config = configFactory()
 const botList = botListsFactory()
@@ -64,11 +74,11 @@ function onReplyFound(replyEl) {
   const replyAuthorEl = replyEl.querySelector('.reply_author')
 
   if (!bot) {
-    const post = allParents(replyEl).find(el => el.classList.contains('post') || el.classList.contains('wl_post'))
+    const post = utils.allParents(replyEl).find(el => el.classList.contains('post') || el.classList.contains('wl_post'))
     const postID = post ? post.getAttribute('data-post-id') : null
 
     replyAuthorEl.append(
-      createLayoutFromString(`
+      utils.createLayoutFromString(`
         <i>
           <a onclick="copyCheckLayout(${userID}, '${postID}', this)">
             Копировать шаблон обращения
@@ -79,12 +89,12 @@ function onReplyFound(replyEl) {
     return
   }
 
-  replyContentEl.style.background = 'rgba(255,50,50,0.4)'
+  replyContentEl.style.background = bot.background
   replyContentEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
   replyContentEl.style.paddingLeft = '3px'
 
   replyAuthorEl.append(
-    createLayoutFromString(`
+    utils.createLayoutFromString(`
       <i>
         <a target='_blank' href='https://gosvon.net/?usr=${userID}'>
           Комментарии
@@ -113,12 +123,12 @@ function onPostFound(postEl) {
   const postHeaderEl = postEl.querySelector('.post_header')
   const postAuthorEl = postEl.querySelector('.post_author')
 
-  postHeaderEl.style.background = 'rgba(255,50,50,0.4)'
+  postHeaderEl.style.background = bot.background
   postHeaderEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
   postHeaderEl.style.paddingLeft = '3px'
 
   postAuthorEl.append(
-    createLayoutFromString(`
+    utils.createLayoutFromString(`
       <i>
         <a target='_blank' href='https://gosvon.net/?usr=${userID}'>
           Комментарии
@@ -139,12 +149,12 @@ function onFanFound(fanEl) {
     return
   }
 
-  fanEl.style.background = 'rgba(255,50,50,0.4)'
+  fanEl.style.background = bot.background
   fanEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
   fanEl.style.paddingLeft = '3px'
 
   fanEl.append(
-    createLayoutFromString(`
+    utils.createLayoutFromString(`
       <center>
         <i>
           <a target='_blank' href='https://gosvon.net/?usr=${userID}'>
@@ -176,13 +186,13 @@ function onLikeFound(likeEl) {
 }
 
 function onProfileFound() {
-  const abuseActionEl = document.querySelector('.page_actions_item.PageActionItem--abuse')
+  const abuseActionEl = document.querySelector('.PageActionCell[data-task-click="ProfileAction/abuse"]')
 
   if (!abuseActionEl) {
     return
   }
 
-  const userID = abuseActionEl.getAttribute('onclick').match(/\d+/)[0]
+  const userID = abuseActionEl.getAttribute('data-user_id')
   const bot = botList.findBot(userID)
 
   if (!bot) {
@@ -190,11 +200,11 @@ function onProfileFound() {
   }
 
   const pagePhotoEl = document.querySelector('.page_photo');
-  pagePhotoEl.style.background = 'rgba(255,50,50,0.4)'
+  pagePhotoEl.style.background = bot.background
 
   const pageNameEl = document.querySelector('.page_name');
 
-  pageNameEl.insertAdjacentElement('afterend', createLayoutFromString(`
+  pageNameEl.insertAdjacentElement('afterend', utils.createLayoutFromString(`
     <i>
       <a target='_blank' href='https://gosvon.net/?usr=${userID}'>
         Комментарии
@@ -222,12 +232,12 @@ function onFoundMobilePost(mobilePostEl) {
 
   const postHeaderEl = mobilePostEl.querySelector('.wi_head');
 
-  postHeaderEl.style.background = 'rgba(255,50,50,0.4)'
+  postHeaderEl.style.background = bot.background
   postHeaderEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
   postHeaderEl.style.paddingLeft = "3px"
 
   postHeaderEl.append(
-    createLayoutFromString(`
+    utils.createLayoutFromString(`
       <i>
         <a target='_blank' href='https://gosvon.net/?usr=${userID}'>
           Комментарии
@@ -257,9 +267,9 @@ function onFoundMobileProfile(ownerPanelEl) {
 
   const ppContEl = ownerPanelEl.querySelector('.pp_cont')
 
-  ppContEl.style.background = 'rgba(255,50,50,0.4)'
+  ppContEl.style.background = bot.background
   ppContEl.append(
-    createLayoutFromString(`
+    utils.createLayoutFromString(`
       <i>
         <a target='_blank' href='https://gosvon.net/?usr=${userID}'>
           Комментарии
@@ -283,12 +293,12 @@ function onFoundMobileReply(replyEl) {
 
   const replyHeaderEl = replyEl.querySelector('.ReplyItem__header')
 
-  replyHeaderEl.style.background = 'rgba(255,50,50,0.4)'
+  replyHeaderEl.style.background = bot.background
   replyHeaderEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
   replyHeaderEl.style.paddingLeft = "3px"
 
   replyHeaderEl.append(
-    createLayoutFromString(`
+    utils.createLayoutFromString(`
       <i>
         <a target='_blank' href='https://gosvon.net/?usr=${userID}'>
           Комментарии
@@ -310,24 +320,9 @@ function onFoundMobileFan(fanEl) {
     return
   }
 
-  fanEl.style.background = 'rgba(255,50,50,0.4)'
+  fanEl.style.background = bot.background
   fanEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
   fanEl.style.paddingLeft = "3px"
-}
-
-function allParents(element) {
-  const parents = [element]
-  while (parents[parents.length - 1].parentElement) {
-    parents.push(parents[parents.length - 1].parentElement)
-  }
-  return parents.slice(1)
-}
-
-function createLayoutFromString(string) {
-  const div = document.createElement('div')
-  div.innerHTML = string
-
-  return div.children[0]
 }
 
 function botListsFactory() {
@@ -338,7 +333,7 @@ function botListsFactory() {
       .map(rawBotItem => ({
         id: Number(rawBotItem.i),
         nickname: rawBotItem.n,
-        marks: [
+        marksIds: [
           rawBotItem.t,
           ...(rawBotItem.m ? [rawBotItem.m] : [])
         ]
@@ -372,29 +367,69 @@ function botListsFactory() {
     const id = matchId && Number(matchId[2])
 
     // TODO искать только по включенным в настройках
+    let foundBot = null
     if (!id) {
-      return botList.find(bot => {
+      foundBot = botList.find(bot => {
         return bot.nickname === idOrNickname
+      })
+    } else {
+      foundBot = botList.find(bot => {
+        return bot.id === id
       })
     }
 
-    return botList.find(bot => {
-      return bot.id === id
-    })
+    return foundBot
   }
 
   async function fillLists() {
     const configData = config.getConfig();
-    const localBotListVersion = GM_getValue('botHighlighterBotListVersion') || 0
+    const localBotListVersion = GM_getValue('botHighlighterBotListVersion1') || 0
+
+    let newBotLists = []
 
     if (configData.botListVersion === localBotListVersion) {
-      botList = JSON.parse(GM_getValue('botHighlighterSavedBotList') || '[]')
-      return
+      newBotLists = JSON.parse(GM_getValue('botHighlighterSavedBotList') || '[]')
+    } else {
+      newBotLists = await fetchBotList()
+      GM_setValue('botHighlighterSavedBotList', JSON.stringify(newBotLists))
+      GM_setValue('botHighlighterBotListVersion1', configData.botListVersion)
     }
 
-    const newBotLists = await fetchBotList()
-    GM_setValue('botHighlighterSavedBotList', JSON.stringify(newBotLists))
-    GM_setValue('botHighlighterBotListVersion', configData.botListVersion)
+    newBotLists = newBotLists.map(bot => {
+      const marks = bot.marksIds
+        .map(
+          botMarkItemId => configData.marks.find(
+            markItem => markItem.id === botMarkItemId
+          ),
+        )
+        .filter(Boolean)
+
+      const background = (() => {
+        if (marks.length === 1) {
+          return marks[0].color
+        }
+
+        const percentShare = Math.round(100 / marks.length)
+        const gradientPointsString = marks.reduce((accStr, markItem, i) => {
+          let itemPercent = (i === marks.length - 1) ? 100 : percentShare * i
+          return accStr + `, ${markItem.color} ${itemPercent}`
+        }, '')
+
+        const gradientAngle = {
+          'vertical': '0deg',
+          'horizontal': '90deg',
+        }[bot.gradientDirection]
+
+        return `linear-gradient(${gradientAngle}, ${gradientPointsString})`
+      })()
+
+      return {
+        ...bot,
+        marks,
+        background,
+      }
+    })
+
     botList = newBotLists
   }
 
@@ -407,22 +442,25 @@ function botListsFactory() {
 function configFactory() {
   let config = {
     botListVersion: null,
-    marks: {},
+    marks: [],
   }
 
   function processRawConfig(rawConfig) {
     const marksFromTypes = rawConfig.types.map((rawTypeItem) => ({
-        id: rawTypeItem.id,
-        name: rawTypeItem.name,
-        color: rawTypeItem.color,
-        gradientDirection: null
+      id: rawTypeItem.id,
+      name: rawTypeItem.name,
+      color: rawTypeItem.color,
+      gradientDirection: null
     }))
 
     const marksFromMark = rawConfig.mark.map((rawMarkItem) => ({
-        id: rawMarkItem.id,
-        name: rawMarkItem.name,
-        color: rawMarkItem.color,
-        gradientDirection: rawMarkItem.id.split('_')[0]
+      id: rawMarkItem.id,
+      name: rawMarkItem.name,
+      color: rawMarkItem.color,
+      gradientDirection: {
+        d: 'vertical',
+        g: 'horizontal'
+      }[rawMarkItem.id.split('_')[0]] || 'vertical'
     }))
 
     return {
