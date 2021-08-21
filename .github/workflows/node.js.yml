@@ -1,0 +1,30 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm install
+    - run: npm run build
+    - run: cp dist/main.js index.js
+    - run: git config user.name ${{ github.event.pusher.name }}
+    - run: git config user.email ${{ github.event.pusher.email }}
+    - run: git add index.js
+    - run: git commit -m "Билд"
+    - run: git push -u origin HEAD
