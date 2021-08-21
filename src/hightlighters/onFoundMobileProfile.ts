@@ -1,5 +1,5 @@
 import { IBotList } from '@/interfaces'
-import utils from '../utils'
+import utils from '@/utils'
 
 export default function onFoundMobileProfile(ownerPanelEl: HTMLElement, botList: IBotList) : void {
   const reportEl = document.querySelector('.ContextMenu__listItem a[href*=reports]')

@@ -1,5 +1,5 @@
 import { IBotList } from '@/interfaces'
-import utils from '../utils'
+import utils from '@/utils'
 
 export default function onProfileFound(_: HTMLElement, botList: IBotList) : void {
   const abuseActionEl = document.querySelector('.PageActionCell[data-task-click="ProfileAction/abuse"]')

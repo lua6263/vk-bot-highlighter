@@ -1,5 +1,5 @@
 import { IBotList } from '@/interfaces'
-import utils from '../utils'
+import utils from '@/utils'
 
 export default function onFoundMobilePost(mobilePostEl: HTMLElement, botList: IBotList) : void {
   const wiHeadLink = mobilePostEl.querySelector('.wi_head a')

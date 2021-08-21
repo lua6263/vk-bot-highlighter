@@ -1,5 +1,5 @@
 import { IBotList } from '@/interfaces'
-import utils from '../utils'
+import utils from '@/utils'
 
 export default function onFanFound(fanEl: HTMLElement, botList: IBotList) : void {
   const userID = fanEl.getAttribute('data-id')

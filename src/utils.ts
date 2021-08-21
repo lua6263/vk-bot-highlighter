@@ -1,4 +1,5 @@
 declare const GM: any
+declare const unsafeWindow: any
 /* eslint-disable @typescript-eslint/naming-convention */
 declare function GM_xmlhttpRequest(...args: any): any
 declare function GM_setValue(...args: any): any
@@ -13,6 +14,7 @@ if (!http) {
 
 export default {
   http,
+  unsafeWindow,
   setStorageValue: GM_setValue,
   getStorageValue: GM_getValue,
 
@@ -24,9 +26,12 @@ export default {
     return parents.slice(1)
   },
 
-  createLayoutFromString(string: string): Element {
+  createLayoutFromString(template: string, vars: { [key: string]: string } = {}): Element {
+    const html = Object.entries(vars)
+      .reduce((acc, [key, value]) => acc.replace(`{{${key}}}`, value), template)
+
     const div = document.createElement('div')
-    div.innerHTML = string
+    div.innerHTML = html
 
     return div.children[0]
   },

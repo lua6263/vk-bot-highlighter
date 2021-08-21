@@ -1,5 +1,5 @@
 import { IBotList } from '@/interfaces'
-import utils from '../utils'
+import utils from '@/utils'
 
 export default function onFoundMobileReply(replyEl: HTMLElement, botList: IBotList) : void {
   const userID = replyEl.querySelector('.ReplyItem__action').getAttribute('onclick').match(/(\d+)\)/)[1]

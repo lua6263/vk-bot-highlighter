@@ -13,7 +13,7 @@ export default function configFactory() : IConfig {
   function processRawConfig(rawConfig: IRawConfig) {
     const marksFromRawTypes: IBotMark[] = rawConfig.types.map((rawTypeItem) => ({
       id: String(rawTypeItem.id),
-      name: rawTypeItem.name,
+      name: rawTypeItem.n,
       color: rawTypeItem.color,
       gradientDirection: null,
     }))
@@ -23,7 +23,7 @@ export default function configFactory() : IConfig {
 
       return {
         id: rawMarkItem.id,
-        name: rawMarkItem.name,
+        name: rawMarkItem.n,
         color: rawMarkItem.color,
         gradientDirection: {
           d: 'vertical',

@@ -1,5 +1,5 @@
 import { IBotList } from '@/interfaces'
-import utils from '../utils'
+import utils from '@/utils'
 
 export default function onReplyFound(replyEl: HTMLElement, botList: IBotList) : void {
   const authorEl = replyEl.querySelector('a.author')

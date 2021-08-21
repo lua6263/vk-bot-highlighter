@@ -28,17 +28,17 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new ESLintPlugin({
-      extensions: ['js', 'ts', 'tsx'],
+      extensions: ['js', 'ts'],
     }),
     new webpack.BannerPlugin({
       raw: true,
-      banner: fs.readFileSync('./src/userScriptHeader.txt', 'utf8'),
+      banner: fs.readFileSync('./webpack/userScriptHeader.txt', 'utf8'),
     }),
   ],
 
   resolve: {
     modules: [path.resolve('./src'), 'node_modules'],
-    extensions: ['.ts', '.js', '.json'],
+    extensions: ['.js', '.ts', '.json'],
     alias: {
       '@': path.resolve('./src'),
     },

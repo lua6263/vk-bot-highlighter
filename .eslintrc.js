@@ -18,7 +18,8 @@ module.exports =  {
     "brace-style": ["error", "1tbs"],
     "@typescript-eslint/semi": ["error", "never"],
     "react/jsx-filename-extension": ["off"],
-    "no-param-reassign": ["off"]
+    "no-param-reassign": ["off"],
+    "import/no-webpack-loader-syntax": ["off"],
   },
   settings: {
     'import/resolver': {
@@ -26,7 +27,7 @@ module.exports =  {
         map: [
           ['@', './src']
         ],
-        extensions: ['.ts', '.js', '.json']
+        extensions: ['.ts', '.js', '.json', '.html']
       }
     }
   }

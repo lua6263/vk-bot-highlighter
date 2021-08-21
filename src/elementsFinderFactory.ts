@@ -1,17 +1,17 @@
-import { IBotList, IElementsFinder, IElementFoundHandler } from './interfaces'
+import { IElementsFinder, IElementFoundHandler } from './interfaces'
 
-export default function elementsFinderFactory(botList: IBotList) : IElementsFinder {
+export default function elementsFinderFactory() : IElementsFinder {
   const mapSelectorHandlers = {} as { [key: string]: IElementFoundHandler[] }
   let alreadyFoundElements = [] as Element[]
 
   setInterval(() => {
     Object.entries(mapSelectorHandlers).forEach(([selector, handlers]) => {
-      const newFoundElements = [...document.querySelectorAll(selector)]
+      const newFoundElements = [...document.querySelectorAll<HTMLElement>(selector)]
         .filter((element) => !alreadyFoundElements.includes(element))
 
       newFoundElements.forEach((element) => {
         handlers.forEach((handler) => {
-          handler(element, botList)
+          handler(element)
         })
       })
 

@@ -1,5 +1,5 @@
 import { IBotList } from '@/interfaces'
-import utils from '../utils'
+import utils from '@/utils'
 
 export default function onPostFound(postEl: HTMLElement, botList: IBotList): void {
   const userID = postEl.querySelector('a.author').getAttribute('data-from-id')

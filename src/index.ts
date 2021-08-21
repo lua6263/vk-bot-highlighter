@@ -1,16 +1,15 @@
 import configFactory from './configFactory'
 import elementsFinderFactory from './elementsFinderFactory'
 import botListsFactory from './botListsFactory'
-import onReplyFound from './finderActions/onReplyFound'
-import onPostFound from './finderActions/onPostFound'
-import onFanFound from './finderActions/onFanFound'
-import onLikeFound from './finderActions/onLikeFound'
-import onProfileFound from './finderActions/onProfileFound'
-import onFoundMobilePost from './finderActions/onFoundMobilePost'
-import onFoundMobileProfile from './finderActions/onFoundMobileProfile'
-import onFoundMobileReply from './finderActions/onFoundMobileReply'
-import onFoundMobileFan from './finderActions/onFoundMobileFan'
-import addMenuItem from './addMenuItem'
+import onReplyFound from './hightlighters/onReplyFound'
+import onPostFound from './hightlighters/onPostFound'
+import onFanFound from './hightlighters/onFanFound'
+import onLikeFound from './hightlighters/onLikeFound'
+import onProfileFound from './hightlighters/onProfileFound'
+import onFoundMobilePost from './hightlighters/onFoundMobilePost'
+import onFoundMobileProfile from './hightlighters/onFoundMobileProfile'
+import onFoundMobileReply from './hightlighters/onFoundMobileReply'
+import onFoundMobileFan from './hightlighters/onFoundMobileFan'
 
 const config = configFactory()
 const botList = botListsFactory(config)
@@ -19,19 +18,18 @@ async function start() {
   await config.fetchConfig()
   await botList.fillLists()
 
-  const finder = elementsFinderFactory(botList)
+  const finder = elementsFinderFactory()
 
-  finder.on('.reply', onReplyFound)
-  finder.on('.post', onPostFound)
-  finder.on('.fans_fan_row', onFanFound)
-  finder.on('.like_tt_owner', onLikeFound)
-  finder.on('#profile', onProfileFound)
+  finder.on('.reply', (el) => onReplyFound(el, botList))
+  finder.on('.post', (el) => onPostFound(el, botList))
+  finder.on('.fans_fan_row', (el) => onFanFound(el, botList))
+  finder.on('.like_tt_owner', (el) => onLikeFound(el, botList))
+  finder.on('#profile', (el) => onProfileFound(el, botList))
 
-  finder.on('.wall_item', onFoundMobilePost)
-  finder.on('.owner_panel.profile_panel', onFoundMobileProfile)
-  finder.on('.ReplyItem', onFoundMobileReply)
-  finder.on('.pcont .inline_item', onFoundMobileFan)
-  finder.on('#top_profile_menu', addMenuItem)
+  finder.on('.wall_item', (el) => onFoundMobilePost(el, botList))
+  finder.on('.owner_panel.profile_panel', (el) => onFoundMobileProfile(el, botList))
+  finder.on('.ReplyItem', (el) => onFoundMobileReply(el, botList))
+  finder.on('.pcont .inline_item', (el) => onFoundMobileFan(el, botList))
 }
 
 start()
