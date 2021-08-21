@@ -1,0 +1,49 @@
+<div>
+    <div id="box_layer_wrap" class="scroll_fix_wrap fixed" style="width: 1132px; height: 722px; display: block;">
+        <div id="box_layer" style="width: 1115px;">
+            <div class="popup_box_container" tabindex="0" style="width: 650px; height: auto; margin-top: 187.667px;">
+                <div class="box_layout" onclick="boxQueue.skip=true;">
+                    <div class="box_title_wrap">
+                        <div class="box_x_button" aria-label="Закрыть" tabindex="0" role="button"></div>
+                        <div class="box_title_controls"></div>
+                        <div class="box_title">
+                            Подсветка ботов ВК
+                            <sup><i></i></sup>
+                        </div>
+                    </div>
+
+                    <div class="box_body box_no_buttons">
+                        <div class="settings_line clear_fix" id="vk_setts_Others">
+
+                            <div class="settings_labeled_text vk_settings_block vk_settings_block_left fl_l">
+
+                                <div class="checkbox on" id="vkcfg_dont_cut_bracket" onclick="checkbox(this); vkopt.settings.set('dont_cut_bracket', isChecked(this));" role="checkbox" aria-checked="true" tabindex="0">
+                                    <div class="vk_checkbox_caption">Обрамление функций дополнения квадратными скобками</div>
+                                </div>
+
+                                <div class="checkbox on" id="vkcfg_skip_away" onclick="checkbox(this); vkopt.settings.set('skip_away', isChecked(this));" role="checkbox" aria-checked="true" tabindex="0">
+                                    <div class="vk_checkbox_caption">Включить обход away.php</div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .vk-bot-highlighter-settings {
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            max-width: 500px;
+            background: #fff;
+            border-left: 1px solid #000;
+            z-index: 9999;
+        }
+    </style>
+</div>
