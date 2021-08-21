@@ -1,0 +1,27 @@
+{
+  "name": "vk-bot-highlighter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=production webpack --watch --config webpack.config.js",
+    "build": "cross-env NODE_ENV=production webpack --config webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maslaknikolai/vk-bot-highlighter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maslaknikolai/vk-bot-highlighter/issues"
+  },
+  "homepage": "https://github.com/maslaknikolai/vk-bot-highlighter#readme",
+  "devDependencies": {
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "cross-env": "^7.0.3",
+    "webpack": "^5.51.1",
+    "webpack-cli": "^4.8.0"
+  }
+}
