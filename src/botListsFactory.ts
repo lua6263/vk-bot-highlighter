@@ -1,36 +1,39 @@
 import utils from './utils'
 import { VK_BOT_LIST_URL } from './constants'
-import { IBot, IBotParsed, IConfig, IRawBot, IBotList } from './interfaces'
+import {
+  IBot, IBotParsed, IConfig, IRawBot, IBotList,
+} from './interfaces'
 
 export default function botListsFactory(config: IConfig) : IBotList {
   let botList: IBot[] = []
 
   function processRawBotList(rawBotList: IRawBot[]) : IBotParsed[] {
     return rawBotList
-      .map(rawBotItem => ({
+      .map((rawBotItem) => ({
         id: Number(rawBotItem.i),
         nickname: rawBotItem.n,
         marksIds: [
           rawBotItem.t,
-          ...(rawBotItem.m ? [rawBotItem.m] : [])
-        ]
+          ...(rawBotItem.m ? [rawBotItem.m] : []),
+        ],
       }))
   }
 
   function fetchBotList(): Promise<IBotParsed[]> {
     return new Promise((resolve, reject) => {
       utils.http({
-        method: "GET",
+        method: 'GET',
         url: VK_BOT_LIST_URL,
         onload(response: any) {
           if (response.status !== 200) {
             reject()
-            return;
+            return
           }
 
-          const botList = processRawBotList(JSON.parse(response.responseText))
-          resolve(botList)
-        }
+          resolve(
+            processRawBotList(JSON.parse(response.responseText)),
+          )
+        },
       })
     })
   }
@@ -42,20 +45,16 @@ export default function botListsFactory(config: IConfig) : IBotList {
     // TODO искать только по включенным в настройках
     let foundBot = null
     if (!id) {
-      foundBot = botList.find(bot => {
-        return bot.nickname === idOrNickname
-      })
+      foundBot = botList.find((bot) => bot.nickname === idOrNickname)
     } else {
-      foundBot = botList.find(bot => {
-        return bot.id === id
-      })
+      foundBot = botList.find((bot) => bot.id === id)
     }
 
     return foundBot
   }
 
   async function fillLists() {
-    const configData = config.getConfig();
+    const configData = config.getConfig()
     const localBotListVersion = utils.getStorageValue('botHighlighterBotListVersion1') || 0
 
     let newBotLists = [] as IBotParsed[]
@@ -68,11 +67,11 @@ export default function botListsFactory(config: IConfig) : IBotList {
       utils.setStorageValue('botHighlighterBotListVersion1', configData.botListVersion)
     }
 
-    const bots: IBot[] = newBotLists.map(bot => {
+    const bots: IBot[] = newBotLists.map((bot) => {
       const marks = bot.marksIds
         .map(
-          botMarkItemId => configData.marks.find(
-            markItem => markItem.id === botMarkItemId
+          (botMarkItemId) => configData.marks.find(
+            (markItem) => markItem.id === botMarkItemId,
           ),
         )
         .filter(Boolean)
@@ -84,19 +83,17 @@ export default function botListsFactory(config: IConfig) : IBotList {
 
         const percentShare = Math.round(100 / marks.length)
         const gradientPointsString = marks.reduce((accStr, markItem, i) => {
-          let itemPercent = (i === marks.length - 1) ? 100 : percentShare * i
-          return accStr + `, ${markItem.color} ${itemPercent}%`
+          const itemPercent = (i === marks.length - 1) ? 100 : percentShare * i
+          return `${accStr}, ${markItem.color} ${itemPercent}%`
         }, '')
 
-        const gradientDirection = (() => {
-          return marks
-            .find(markItem => markItem.gradientDirection)
-            .gradientDirection
-        })()
+        const gradientDirection = (() => marks
+          .find((markItem) => markItem.gradientDirection)
+          .gradientDirection)()
 
         const gradientAngle = {
-          'vertical': '0deg',
-          'horizontal': '90deg',
+          vertical: '0deg',
+          horizontal: '90deg',
         }[gradientDirection]
 
         return `linear-gradient(${gradientAngle}${gradientPointsString})`
@@ -115,6 +112,6 @@ export default function botListsFactory(config: IConfig) : IBotList {
 
   return {
     fillLists,
-    findBot
+    findBot,
   }
 }

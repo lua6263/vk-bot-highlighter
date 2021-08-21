@@ -1,23 +1,23 @@
-import { IBotList, IElementsFinder, IElementFoundHandler } from "./interfaces"
+import { IBotList, IElementsFinder, IElementFoundHandler } from './interfaces'
 
 export default function elementsFinderFactory(botList: IBotList) : IElementsFinder {
-  let mapSelectorHandlers = {} as { [key: string]: IElementFoundHandler[] }
+  const mapSelectorHandlers = {} as { [key: string]: IElementFoundHandler[] }
   let alreadyFoundElements = [] as Element[]
 
   setInterval(() => {
     Object.entries(mapSelectorHandlers).forEach(([selector, handlers]) => {
       const newFoundElements = [...document.querySelectorAll(selector)]
-        .filter(element => !alreadyFoundElements.includes(element))
+        .filter((element) => !alreadyFoundElements.includes(element))
 
-      newFoundElements.forEach(element => {
-        handlers.forEach(handler => {
+      newFoundElements.forEach((element) => {
+        handlers.forEach((handler) => {
           handler(element, botList)
         })
       })
 
       alreadyFoundElements = [
         ...alreadyFoundElements,
-        ...newFoundElements
+        ...newFoundElements,
       ]
     })
   }, 300)
@@ -31,6 +31,6 @@ export default function elementsFinderFactory(botList: IBotList) : IElementsFind
   }
 
   return {
-    on
+    on,
   }
 }

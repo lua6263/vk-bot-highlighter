@@ -1,6 +1,7 @@
+import { IBotList } from '@/interfaces'
 import utils from '../utils'
 
-export default function onFoundMobileProfile(ownerPanelEl, botList) {
+export default function onFoundMobileProfile(ownerPanelEl: HTMLElement, botList: IBotList) : void {
   const reportEl = document.querySelector('.ContextMenu__listItem a[href*=reports]')
 
   if (!reportEl) {
@@ -15,7 +16,7 @@ export default function onFoundMobileProfile(ownerPanelEl, botList) {
     return
   }
 
-  const ppContEl = ownerPanelEl.querySelector('.pp_cont')
+  const ppContEl = ownerPanelEl.querySelector<HTMLElement>('.pp_cont')
 
   ppContEl.style.background = bot.background
   ppContEl.append(
@@ -28,6 +29,6 @@ export default function onFoundMobileProfile(ownerPanelEl, botList) {
           Карточка
         </a>
       </i>
-    `)
-  );
+    `),
+  )
 }

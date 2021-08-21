@@ -2,10 +2,11 @@ const webpack = require('webpack')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const path = require('path')
 const fs = require('fs')
+const ESLintPlugin = require('eslint-webpack-plugin')
 
 module.exports = {
   entry: [
-      path.resolve('src/index.ts')
+    path.resolve('src/index.ts'),
   ],
 
   output: {
@@ -26,10 +27,13 @@ module.exports = {
 
   plugins: [
     new CleanWebpackPlugin(),
+    new ESLintPlugin({
+      extensions: ['js', 'ts', 'tsx'],
+    }),
     new webpack.BannerPlugin({
-        raw: true,
-        banner: fs.readFileSync('./src/userScriptHeader.txt', "utf8")
-    })
+      raw: true,
+      banner: fs.readFileSync('./src/userScriptHeader.txt', 'utf8'),
+    }),
   ],
 
   resolve: {
@@ -41,6 +45,6 @@ module.exports = {
   },
 
   optimization: {
-    minimize: false
-  }
+    minimize: false,
+  },
 }

@@ -10,6 +10,7 @@ import onFoundMobilePost from './finderActions/onFoundMobilePost'
 import onFoundMobileProfile from './finderActions/onFoundMobileProfile'
 import onFoundMobileReply from './finderActions/onFoundMobileReply'
 import onFoundMobileFan from './finderActions/onFoundMobileFan'
+import addMenuItem from './addMenuItem'
 
 const config = configFactory()
 const botList = botListsFactory(config)
@@ -27,9 +28,10 @@ async function start() {
   finder.on('#profile', onProfileFound)
 
   finder.on('.wall_item', onFoundMobilePost)
-  finder.on('.owner_panel.profile_panel', onFoundMobileProfile);
-  finder.on('.ReplyItem', onFoundMobileReply);
-  finder.on('.pcont .inline_item', onFoundMobileFan);
+  finder.on('.owner_panel.profile_panel', onFoundMobileProfile)
+  finder.on('.ReplyItem', onFoundMobileReply)
+  finder.on('.pcont .inline_item', onFoundMobileFan)
+  finder.on('#top_profile_menu', addMenuItem)
 }
 
 start()

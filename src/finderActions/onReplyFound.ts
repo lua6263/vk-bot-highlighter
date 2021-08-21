@@ -1,6 +1,7 @@
+import { IBotList } from '@/interfaces'
 import utils from '../utils'
 
-export default function onReplyFound(replyEl, botList) {
+export default function onReplyFound(replyEl: HTMLElement, botList: IBotList) : void {
   const authorEl = replyEl.querySelector('a.author')
 
   if (!authorEl) {
@@ -14,11 +15,11 @@ export default function onReplyFound(replyEl, botList) {
     return
   }
 
-  const replyContentEl = replyEl.querySelector('.reply_content')
-  const replyAuthorEl = replyEl.querySelector('.reply_author')
+  const replyContentEl = replyEl.querySelector<HTMLElement>('.reply_content')
+  const replyAuthorEl = replyEl.querySelector<HTMLElement>('.reply_author')
 
   replyContentEl.style.background = bot.background
-  replyContentEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
+  replyContentEl.style.borderLeft = '3px solid rgba(255,50,50,0.3)'
   replyContentEl.style.paddingLeft = '3px'
 
   replyAuthorEl.append(
@@ -31,6 +32,6 @@ export default function onReplyFound(replyEl, botList) {
           Карточка
         </a>
       </i>
-    `)
+    `),
   )
 }

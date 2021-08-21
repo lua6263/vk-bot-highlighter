@@ -1,6 +1,8 @@
 import utils from './utils'
 import { CONFIG_URL } from './constants'
-import { IBotMark, IConfig, IConfigState, IGradientDirection, IRawConfig } from './interfaces'
+import {
+  IBotMark, IConfig, IConfigState, IGradientDirection, IRawConfig,
+} from './interfaces'
 
 export default function configFactory() : IConfig {
   let config = {
@@ -13,7 +15,7 @@ export default function configFactory() : IConfig {
       id: String(rawTypeItem.id),
       name: rawTypeItem.name,
       color: rawTypeItem.color,
-      gradientDirection: null
+      gradientDirection: null,
     }))
 
     const marksFromRawMarks: IBotMark[] = rawConfig.mark.map((rawMarkItem) => {
@@ -25,8 +27,8 @@ export default function configFactory() : IConfig {
         color: rawMarkItem.color,
         gradientDirection: {
           d: 'vertical',
-          g: 'horizontal'
-        }[directionFromMarkId] as IGradientDirection
+          g: 'horizontal',
+        }[directionFromMarkId] as IGradientDirection,
       }
     })
 
@@ -35,19 +37,19 @@ export default function configFactory() : IConfig {
       marks: [
         ...marksFromRawTypes,
         ...marksFromRawMarks,
-      ]
+      ],
     }
   }
 
   function fetchConfig() {
     return new Promise<void>((resolve) => {
       utils.http({
-        method: "GET",
+        method: 'GET',
         url: CONFIG_URL,
         async onload(response: any) {
           config = processRawConfig(JSON.parse(response.responseText))
           resolve()
-        }
+        },
       })
     })
   }
@@ -58,6 +60,6 @@ export default function configFactory() : IConfig {
 
   return {
     fetchConfig,
-    getConfig
+    getConfig,
   }
 }

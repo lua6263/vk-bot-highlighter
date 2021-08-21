@@ -1,6 +1,7 @@
+import { IBotList } from '@/interfaces'
 import utils from '../utils'
 
-export default function onPostFound(postEl, botList) {
+export default function onPostFound(postEl: HTMLElement, botList: IBotList): void {
   const userID = postEl.querySelector('a.author').getAttribute('data-from-id')
 
   if (!userID) {
@@ -13,11 +14,11 @@ export default function onPostFound(postEl, botList) {
     return
   }
 
-  const postHeaderEl = postEl.querySelector('.post_header')
-  const postAuthorEl = postEl.querySelector('.post_author')
+  const postHeaderEl = postEl.querySelector<HTMLElement>('.post_header')
+  const postAuthorEl = postEl.querySelector<HTMLElement>('.post_author')
 
   postHeaderEl.style.background = bot.background
-  postHeaderEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
+  postHeaderEl.style.borderLeft = '3px solid rgba(255,50,50,0.3)'
   postHeaderEl.style.paddingLeft = '3px'
 
   postAuthorEl.append(
@@ -30,6 +31,6 @@ export default function onPostFound(postEl, botList) {
           Карточка
         </a>
       </i>
-    `)
+    `),
   )
 }

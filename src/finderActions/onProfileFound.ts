@@ -1,6 +1,7 @@
+import { IBotList } from '@/interfaces'
 import utils from '../utils'
 
-export default function onProfileFound(_, botList) {
+export default function onProfileFound(_: HTMLElement, botList: IBotList) : void {
   const abuseActionEl = document.querySelector('.PageActionCell[data-task-click="ProfileAction/abuse"]')
 
   if (!abuseActionEl) {
@@ -14,10 +15,10 @@ export default function onProfileFound(_, botList) {
     return
   }
 
-  const pagePhotoEl = document.querySelector('.page_photo');
+  const pagePhotoEl = document.querySelector<HTMLElement>('.page_photo')
   pagePhotoEl.style.background = bot.background
 
-  const pageNameEl = document.querySelector('.page_name');
+  const pageNameEl = document.querySelector<HTMLElement>('.page_name')
 
   pageNameEl.insertAdjacentElement('afterend', utils.createLayoutFromString(`
     <i>

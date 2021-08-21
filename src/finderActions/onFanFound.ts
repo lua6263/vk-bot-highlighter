@@ -1,6 +1,7 @@
+import { IBotList } from '@/interfaces'
 import utils from '../utils'
 
-export default function onFanFound(fanEl, botList) {
+export default function onFanFound(fanEl: HTMLElement, botList: IBotList) : void {
   const userID = fanEl.getAttribute('data-id')
   const bot = botList.findBot(userID)
 
@@ -9,7 +10,7 @@ export default function onFanFound(fanEl, botList) {
   }
 
   fanEl.style.background = bot.background
-  fanEl.style.borderLeft = `3px solid rgba(255,50,50,0.3)`
+  fanEl.style.borderLeft = '3px solid rgba(255,50,50,0.3)'
   fanEl.style.paddingLeft = '3px'
 
   fanEl.append(
@@ -24,6 +25,6 @@ export default function onFanFound(fanEl, botList) {
           </a>
         </i>
       </center>
-    `)
+    `),
   )
 }

@@ -1,4 +1,6 @@
-export default function onLikeFound(likeEl, botList) {
+import { IBotList } from '@/interfaces'
+
+export default function onLikeFound(likeEl: HTMLElement, botList: IBotList) : void {
   const userID = likeEl.getAttribute('href').substr(1)
   const bot = botList.findBot(userID)
 
@@ -6,7 +8,7 @@ export default function onLikeFound(likeEl, botList) {
     return
   }
 
-  const userAvatarEl = likeEl.querySelector('.like_tt_image')
+  const userAvatarEl = likeEl.querySelector<HTMLElement>('.like_tt_image')
 
   userAvatarEl.style.opacity = '0.5'
 
