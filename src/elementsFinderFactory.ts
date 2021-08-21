@@ -1,6 +1,8 @@
-export default function elementsFinderFactory(botList) {
-  let mapSelectorHandlers = {}
-  let alreadyFoundElements = []
+import { IBotList, IElementsFinder, IElementFoundHandler } from "./interfaces"
+
+export default function elementsFinderFactory(botList: IBotList) : IElementsFinder {
+  let mapSelectorHandlers = {} as { [key: string]: IElementFoundHandler[] }
+  let alreadyFoundElements = [] as Element[]
 
   setInterval(() => {
     Object.entries(mapSelectorHandlers).forEach(([selector, handlers]) => {
@@ -20,7 +22,7 @@ export default function elementsFinderFactory(botList) {
     })
   }, 300)
 
-  function on(selector, foundHandler) {
+  function on(selector: string, foundHandler: IElementFoundHandler) {
     if (!mapSelectorHandlers[selector]) {
       mapSelectorHandlers[selector] = []
     }

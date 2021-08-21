@@ -5,12 +5,23 @@ const fs = require('fs')
 
 module.exports = {
   entry: [
-      path.resolve('src/index.js')
+      path.resolve('src/index.ts')
   ],
+
   output: {
     path: path.resolve('dist'),
     filename: '[name].js',
     publicPath: '/',
+  },
+
+  module: {
+    rules: [
+      {
+        test: /\.ts?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
   },
 
   plugins: [
@@ -23,7 +34,7 @@ module.exports = {
 
   resolve: {
     modules: [path.resolve('./src'), 'node_modules'],
-    extensions: ['.js', '.json'],
+    extensions: ['.ts', '.js', '.json'],
     alias: {
       '@': path.resolve('./src'),
     },

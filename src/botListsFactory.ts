@@ -1,10 +1,11 @@
 import utils from './utils'
 import { VK_BOT_LIST_URL } from './constants'
+import { IBot, IBotParsed, IConfig, IRawBot, IBotList } from './interfaces'
 
-export default function botListsFactory(config) {
-  let botList = []
+export default function botListsFactory(config: IConfig) : IBotList {
+  let botList: IBot[] = []
 
-  function processRawBotList(rawBotList) {
+  function processRawBotList(rawBotList: IRawBot[]) : IBotParsed[] {
     return rawBotList
       .map(rawBotItem => ({
         id: Number(rawBotItem.i),
@@ -16,16 +17,12 @@ export default function botListsFactory(config) {
       }))
   }
 
-  function fetchBotList() {
-    if (!http) {
-      return Promise.reject("Unable to get supported cross-origin XMLHttpRequest function.")
-    }
-
+  function fetchBotList(): Promise<IBotParsed[]> {
     return new Promise((resolve, reject) => {
-      http({
+      utils.http({
         method: "GET",
         url: VK_BOT_LIST_URL,
-        onload(response) {
+        onload(response: any) {
           if (response.status !== 200) {
             reject()
             return;
@@ -38,7 +35,7 @@ export default function botListsFactory(config) {
     })
   }
 
-  function findBot(idOrNickname) {
+  function findBot(idOrNickname: number | string) {
     const matchId = String(idOrNickname).match(/^(id)?(\d{6,})$/)
     const id = matchId && Number(matchId[2])
 
@@ -61,7 +58,7 @@ export default function botListsFactory(config) {
     const configData = config.getConfig();
     const localBotListVersion = utils.getStorageValue('botHighlighterBotListVersion1') || 0
 
-    let newBotLists = []
+    let newBotLists = [] as IBotParsed[]
 
     if (configData.botListVersion === localBotListVersion) {
       newBotLists = JSON.parse(utils.getStorageValue('botHighlighterSavedBotList') || '[]')
@@ -71,7 +68,7 @@ export default function botListsFactory(config) {
       utils.setStorageValue('botHighlighterBotListVersion1', configData.botListVersion)
     }
 
-    newBotLists = newBotLists.map(bot => {
+    const bots: IBot[] = newBotLists.map(bot => {
       const marks = bot.marksIds
         .map(
           botMarkItemId => configData.marks.find(
@@ -88,25 +85,32 @@ export default function botListsFactory(config) {
         const percentShare = Math.round(100 / marks.length)
         const gradientPointsString = marks.reduce((accStr, markItem, i) => {
           let itemPercent = (i === marks.length - 1) ? 100 : percentShare * i
-          return accStr + `, ${markItem.color} ${itemPercent}`
+          return accStr + `, ${markItem.color} ${itemPercent}%`
         }, '')
+
+        const gradientDirection = (() => {
+          return marks
+            .find(markItem => markItem.gradientDirection)
+            .gradientDirection
+        })()
 
         const gradientAngle = {
           'vertical': '0deg',
           'horizontal': '90deg',
-        }[bot.gradientDirection]
+        }[gradientDirection]
 
-        return `linear-gradient(${gradientAngle}, ${gradientPointsString})`
+        return `linear-gradient(${gradientAngle}${gradientPointsString})`
       })()
 
       return {
-        ...bot,
+        id: bot.id,
+        nickname: bot.nickname,
         marks,
         background,
       }
     })
 
-    botList = newBotLists
+    botList = bots
   }
 
   return {
