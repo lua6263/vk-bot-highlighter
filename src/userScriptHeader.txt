@@ -5,7 +5,6 @@
 // @version      0.0.1
 // @include      https://*vk.com/*
 // @connect      api.gosvon.net
-// @grant        unsafeWindow
 // @grant        GM_xmlhttpRequest
 // @grant        GM.xmlHttpRequest
 // @grant        GM_setValue
