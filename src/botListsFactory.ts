@@ -19,23 +19,9 @@ export default function botListsFactory(config: IConfig) : IBotList {
       }))
   }
 
-  function fetchBotList(): Promise<IBotParsed[]> {
-    return new Promise((resolve, reject) => {
-      utils.http({
-        method: 'GET',
-        url: VK_BOT_LIST_URL,
-        onload(response: any) {
-          if (response.status !== 200) {
-            reject()
-            return
-          }
-
-          resolve(
-            processRawBotList(JSON.parse(response.responseText)),
-          )
-        },
-      })
-    })
+  async function fetchBotList(): Promise<IBotParsed[]> {
+    const responseText = await utils.http({ url: VK_BOT_LIST_URL })
+    return processRawBotList(JSON.parse(responseText))
   }
 
   function findBot(idOrNickname: number | string) {

@@ -41,17 +41,9 @@ export default function configFactory() : IConfig {
     }
   }
 
-  function fetchConfig() {
-    return new Promise<void>((resolve) => {
-      utils.http({
-        method: 'GET',
-        url: CONFIG_URL,
-        async onload(response: any) {
-          config = processRawConfig(JSON.parse(response.responseText))
-          resolve()
-        },
-      })
-    })
+  async function fetchConfig() {
+    const responseText = await utils.http({ url: CONFIG_URL })
+    config = processRawConfig(JSON.parse(responseText))
   }
 
   function getConfig() {

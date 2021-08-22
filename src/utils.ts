@@ -12,8 +12,24 @@ if (!http) {
   throw new Error('Unable to get supported cross-origin XMLHttpRequest function.')
 }
 
+interface IHttpOptions {
+  url: string
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE',
+}
+
 export default {
-  http,
+  async http(options: IHttpOptions): Promise<string> {
+    return new Promise<string>((resolve) => {
+      http({
+        url: options.url,
+        method: options.method || 'GET',
+        overrideMimeType: 'application/json; charset=windows-1251',
+        async onload(response: any) {
+          resolve(response.responseText as string)
+        },
+      })
+    })
+  },
   unsafeWindow,
   setStorageValue: GM_setValue,
   getStorageValue: GM_getValue,
