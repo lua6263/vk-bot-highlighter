@@ -21,6 +21,19 @@ export default function onPostFound(postEl: HTMLElement, botList: IBotList): voi
   postHeaderEl.style.borderLeft = '3px solid rgba(255,50,50,0.3)'
   postHeaderEl.style.paddingLeft = '3px'
 
+  const authorEl = postEl.querySelector<HTMLElement>('.author')
+  const marksEl = utils.createLayoutFromString('<div class="vk-bot-marks" style="display: inline-block;"></div>')
+  authorEl.after(marksEl)
+  bot.marks
+    .map((mark, i) => utils.createLayoutFromString(`
+      <i>
+        ${i === 0 ? '(' : ''}
+        ${mark.name}
+        ${(i === bot.marks.length - 1) ? ')' : ', '}
+      </i>
+    `))
+    .forEach((markEl) => marksEl.appendChild(markEl))
+
   postAuthorEl.append(
     utils.createLayoutFromString(`
       <i>

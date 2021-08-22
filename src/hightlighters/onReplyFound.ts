@@ -22,6 +22,18 @@ export default function onReplyFound(replyEl: HTMLElement, botList: IBotList) : 
   replyContentEl.style.borderLeft = '3px solid rgba(255,50,50,0.3)'
   replyContentEl.style.paddingLeft = '3px'
 
+  const marksEl = utils.createLayoutFromString('<div class="vk-bot-marks" style="display: inline-block;"></div>')
+  authorEl.after(marksEl)
+  bot.marks
+    .map((mark, i) => utils.createLayoutFromString(`
+      <i>
+        ${i === 0 ? '(' : ''}
+        ${mark.name}
+        ${(i === bot.marks.length - 1) ? ')' : ', '}
+      </i>
+    `))
+    .forEach((markEl) => marksEl.appendChild(markEl))
+
   replyAuthorEl.append(
     utils.createLayoutFromString(`
       <i>
