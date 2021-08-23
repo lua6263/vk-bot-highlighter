@@ -8,6 +8,8 @@
     "allowJs": true,
     "moduleResolution": "node",
     "baseUrl": ".",
+    "typeRoots": ["./raw-loader.d.ts"],
+    "types": ["node"],
     "paths": {
       "@/*": ["./src/*",]
     }

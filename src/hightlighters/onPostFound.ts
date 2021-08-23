@@ -1,5 +1,6 @@
 import { IBotList } from '@/interfaces'
 import utils from '@/utils'
+import commonActionsTemplate from 'raw-loader!@/layouts/commonActions.html'
 
 export default function onPostFound(postEl: HTMLElement, botList: IBotList): void {
   const userID = postEl.querySelector('a.author').getAttribute('data-from-id')
@@ -35,15 +36,6 @@ export default function onPostFound(postEl: HTMLElement, botList: IBotList): voi
     .forEach((markEl) => marksEl.appendChild(markEl))
 
   postAuthorEl.append(
-    utils.createLayoutFromString(`
-      <i>
-        <a target='_blank' href='https://gosvon.net/?usr=${userID}'>
-          Комментарии
-        </a>
-        <a target='_blank' href='https://gosvon.net/photo.php?id=${userID}'>
-          Карточка
-        </a>
-      </i>
-    `),
+    utils.createLayoutFromString(commonActionsTemplate, { userID }),
   )
 }

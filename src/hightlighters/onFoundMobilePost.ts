@@ -1,5 +1,6 @@
 import { IBotList } from '@/interfaces'
 import utils from '@/utils'
+import commonActionsTemplate from 'raw-loader!@/layouts/commonActions.html'
 
 export default function onFoundMobilePost(mobilePostEl: HTMLElement, botList: IBotList) : void {
   const wiHeadLink = mobilePostEl.querySelector('.wi_head a')
@@ -22,15 +23,6 @@ export default function onFoundMobilePost(mobilePostEl: HTMLElement, botList: IB
   postHeaderEl.style.paddingLeft = '3px'
 
   postHeaderEl.append(
-    utils.createLayoutFromString(`
-      <i>
-        <a target='_blank' href='https://gosvon.net/?usr=${userID}'>
-          Комментарии
-        </a>
-        <a target='_blank' href='https://gosvon.net/photo.php?id=${userID}'>
-          Карточка
-        </a>
-      </i>"
-    `),
+    utils.createLayoutFromString(commonActionsTemplate, { userID }),
   )
 }

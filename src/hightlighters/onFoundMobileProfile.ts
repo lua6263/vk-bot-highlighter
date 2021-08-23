@@ -1,5 +1,6 @@
 import { IBotList } from '@/interfaces'
 import utils from '@/utils'
+import commonActionsTemplate from 'raw-loader!@/layouts/commonActions.html'
 
 export default function onFoundMobileProfile(ownerPanelEl: HTMLElement, botList: IBotList) : void {
   const reportEl = document.querySelector('.ContextMenu__listItem a[href*=reports]')
@@ -20,15 +21,6 @@ export default function onFoundMobileProfile(ownerPanelEl: HTMLElement, botList:
 
   ppContEl.style.background = bot.background
   ppContEl.append(
-    utils.createLayoutFromString(`
-      <i>
-        <a target='_blank' href='https://gosvon.net/?usr=${userID}'>
-          Комментарии
-        </a>
-        <a target='_blank' href='https://gosvon.net/photo.php?id=${userID}'>
-          Карточка
-        </a>
-      </i>
-    `),
+    utils.createLayoutFromString(commonActionsTemplate, { userID }),
   )
 }

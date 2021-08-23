@@ -1,5 +1,6 @@
 import { IBotList } from '@/interfaces'
 import utils from '@/utils'
+import commonActionsTemplate from 'raw-loader!@/layouts/commonActions.html'
 
 export default function onFoundMobileReply(replyEl: HTMLElement, botList: IBotList) : void {
   const userID = replyEl.querySelector('.ReplyItem__action').getAttribute('onclick').match(/(\d+)\)/)[1]
@@ -17,15 +18,6 @@ export default function onFoundMobileReply(replyEl: HTMLElement, botList: IBotLi
   replyHeaderEl.style.paddingLeft = '3px'
 
   replyHeaderEl.append(
-    utils.createLayoutFromString(`
-      <i>
-        <a target='_blank' href='https://gosvon.net/?usr=${userID}'>
-          Комментарии
-        </a>
-        <a target='_blank' href='https://gosvon.net/photo.php?id=${userID}'>
-          Карточка
-        </a>
-      </i>
-    `),
+    utils.createLayoutFromString(commonActionsTemplate, { userID }),
   )
 }

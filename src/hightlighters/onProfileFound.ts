@@ -1,5 +1,6 @@
 import { IBotList } from '@/interfaces'
 import utils from '@/utils'
+import commonActionsTemplate from 'raw-loader!@/layouts/commonActions.html'
 
 export default function onProfileFound(_: HTMLElement, botList: IBotList) : void {
   const abuseActionEl = document.querySelector('.PageActionCell[data-task-click="ProfileAction/abuse"]')
@@ -20,14 +21,5 @@ export default function onProfileFound(_: HTMLElement, botList: IBotList) : void
 
   const pageNameEl = document.querySelector<HTMLElement>('.page_name')
 
-  pageNameEl.insertAdjacentElement('afterend', utils.createLayoutFromString(`
-    <i>
-      <a target='_blank' href='https://gosvon.net/?usr=${userID}'>
-        Комментарии
-      </a>
-      <a target='_blank' href='https://gosvon.net/photo.php?id=${userID}'>
-        Карточка
-      </a>
-    </i>
-  `))
+  pageNameEl.insertAdjacentElement('afterend', utils.createLayoutFromString(commonActionsTemplate, { userID }))
 }
