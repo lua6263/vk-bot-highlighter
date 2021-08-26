@@ -1,6 +1,7 @@
 import { IBotList } from '@/interfaces'
 import utils from '@/utils'
 import commonActionsTemplate from 'raw-loader!@/layouts/commonActions.html'
+import commonMarksContainer from 'raw-loader!@/layouts/commonMarksContainer.html'
 
 export default function onReplyFound(replyEl: HTMLElement, botList: IBotList) : void {
   const authorEl = replyEl.querySelector('a.author')
@@ -23,7 +24,7 @@ export default function onReplyFound(replyEl: HTMLElement, botList: IBotList) : 
   replyContentEl.style.borderLeft = '3px solid rgba(255,50,50,0.3)'
   replyContentEl.style.paddingLeft = '3px'
 
-  const marksEl = utils.createLayoutFromString('<div class="vk-bot-marks" style="display: inline-block;"></div>')
+  const marksEl = utils.createLayoutFromString(commonMarksContainer)
   authorEl.after(marksEl)
   bot.marks
     .map((mark, i) => utils.createLayoutFromString(`

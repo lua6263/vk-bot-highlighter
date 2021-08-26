@@ -1,6 +1,6 @@
 export interface IRawBot {
   i: string
-  n: string
+  n: string | undefined
   t: string
   m: string
 }
@@ -44,14 +44,14 @@ export interface IBotMark {
 
 export interface IBotParsed {
   id: number
-  nickname: string
+  nickname: string | undefined
   marksIds: string[]
 }
 
 export interface IBot {
   id: number
   background: string
-  nickname: string
+  nickname: string | undefined
   marks: IBotMark[]
 }
 
@@ -63,4 +63,10 @@ export interface IBotList {
 export type IElementFoundHandler = (element: HTMLElement) => void
 export interface IElementsFinder {
   on: (selector: string, foundHandler: IElementFoundHandler) => void
+}
+
+export interface IUserSettings {
+  enableMark: (markId: string) => void
+  disableMark: (markId: string) => void
+  checkIsMarkDisabled: (markId: string) => boolean
 }

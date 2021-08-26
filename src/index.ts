@@ -10,15 +10,20 @@ import onFoundMobilePost from './hightlighters/onFoundMobilePost'
 import onFoundMobileProfile from './hightlighters/onFoundMobileProfile'
 import onFoundMobileReply from './hightlighters/onFoundMobileReply'
 import onFoundMobileFan from './hightlighters/onFoundMobileFan'
+import addVkBotOptionsInMenu from './addVkBotOptionsInMenu'
+import userSettingsFactory from './userSettingsFactory'
 
+const userSettings = userSettingsFactory()
 const config = configFactory()
-const botList = botListsFactory(config)
+const botList = botListsFactory(config, userSettings)
 
 async function start() {
   await config.fetchConfig()
   await botList.fillLists()
 
   const finder = elementsFinderFactory()
+
+  finder.on('#top_profile_menu', () => addVkBotOptionsInMenu(config, userSettings))
 
   finder.on('.reply', (el) => onReplyFound(el, botList))
   finder.on('.post', (el) => onPostFound(el, botList))

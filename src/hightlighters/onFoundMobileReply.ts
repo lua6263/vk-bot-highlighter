@@ -3,13 +3,37 @@ import utils from '@/utils'
 import commonActionsTemplate from 'raw-loader!@/layouts/commonActions.html'
 
 export default function onFoundMobileReply(replyEl: HTMLElement, botList: IBotList) : void {
-  const userID = replyEl.querySelector('.ReplyItem__action').getAttribute('onclick').match(/(\d+)\)/)[1]
+  const replyUserNameEl = replyEl.querySelector('.ReplyItem__name')
 
+  if (!replyUserNameEl) {
+    return
+  }
+
+  const userID = replyUserNameEl.getAttribute('href').substr(1)
   const bot = botList.findBot(userID)
 
   if (!bot) {
     return
   }
+
+  const marksEl = utils.createLayoutFromString(`
+    <div
+      class="vk-bot-marks"
+      style="
+        display: inline-block;
+        font-size: 12px;
+      "></div>
+  `)
+  replyUserNameEl.after(marksEl)
+  bot.marks
+    .map((mark, i) => utils.createLayoutFromString(`
+      <i>
+        ${i === 0 ? '(' : ''}
+        ${mark.name}
+        ${(i === bot.marks.length - 1) ? ')' : ', '}
+      </i>
+    `))
+    .forEach((markEl) => marksEl.appendChild(markEl))
 
   const replyHeaderEl = replyEl.querySelector<HTMLElement>('.ReplyItem__header')
 

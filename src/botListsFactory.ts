@@ -1,10 +1,10 @@
 import utils from './utils'
 import { VK_BOT_LIST_URL } from './constants'
 import {
-  IBot, IBotParsed, IConfig, IRawBot, IBotList,
+  IBot, IBotParsed, IConfig, IRawBot, IBotList, IUserSettings,
 } from './interfaces'
 
-export default function botListsFactory(config: IConfig) : IBotList {
+export default function botListsFactory(config: IConfig, userSettings: IUserSettings) : IBotList {
   let botList: IBot[] = []
 
   function processRawBotList(rawBotList: IRawBot[]) : IBotParsed[] {
@@ -28,12 +28,23 @@ export default function botListsFactory(config: IConfig) : IBotList {
     const matchId = String(idOrNickname).match(/^(id)?(\d{6,})$/)
     const id = matchId && Number(matchId[2])
 
-    // TODO искать только по включенным в настройках
     let foundBot = null
     if (!id) {
       foundBot = botList.find((bot) => bot.nickname === idOrNickname)
     } else {
       foundBot = botList.find((bot) => bot.id === id)
+    }
+
+    if (!foundBot) {
+      return null
+    }
+
+    const isEveryMarksDisabled = foundBot.marks.every(
+      (markItem) => userSettings.checkIsMarkDisabled(markItem.id),
+    )
+
+    if (isEveryMarksDisabled) {
+      return null
     }
 
     return foundBot

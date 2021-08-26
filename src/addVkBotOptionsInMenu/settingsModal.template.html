@@ -1,0 +1,60 @@
+<div>
+    <div
+        id="box_layer_wrap"
+        class="VkBotsSettingsModal scroll_fix_wrap fixed"
+        style="
+            width: 100%;
+            height: 100%;
+            display: none;
+        "
+    >
+        <div
+            id="box_layer"
+            style="padding-bottom: 0;"
+        >
+            <div
+                class="popup_box_container"
+                tabindex="0"
+                style="
+                    width: 100%;
+                    max-width: 650px;
+                    height: auto;
+                    margin-top: 100px;
+                "
+            >
+                <div class="box_layout">
+                    <div class="box_title_wrap">
+                        <div
+                            class="box_x_button"
+                            aria-label="Закрыть"
+                            tabindex="0"
+                            role="button"
+                            onclick="closeVkBotSettings()"
+                        ></div>
+
+                        <div class="box_title">
+                            Подсветка ботов ВК
+                        </div>
+                    </div>
+
+                    <div
+                        class="box_body box_no_buttons"
+                        style="
+                            height: 400px;
+                            overflow: auto;
+                        "
+                    >
+                        <div class="settings_line clear_fix">
+
+                            <div class="settings_labeled_text vk_settings_block vk_settings_block_left fl_l">
+
+                                {{checkboxes}}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
